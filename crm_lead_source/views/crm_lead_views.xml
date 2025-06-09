@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================== -->
+    <!-- MAIN FORM VIEW CUSTOMIZATION (PERMANENT CHANGES) -->
+    <!-- ============================================== -->
+    <record id="crm_lead_view_form_custom" model="ir.ui.view">
+        <field name="name">crm.lead.form.custom</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="priority">99</field>  <!-- Higher than standard views -->
+        <field name="arch" type="xml">
+            
+            <!-- 1. PERMANENTLY REMOVE SOURCE FROM MARKETING SECTIONS -->
+            <xpath expr="//group[@name='categorization']/field[@name='source_id']" position="replace"/>
+            <xpath expr="//page[@name='lead']//group[@string='Marketing']/field[@name='source_id']" position="replace"/>
+            
+            <!-- 2. ADD SOURCE FIELD ABOVE EXPECTED REVENUE -->
+            <xpath expr="//field[@name='expected_revenue']" position="before">
+                <div class="row g-0 pb-3">
+                    <div class="col-md-6">
+                        <label for="lead_source" string="Source"/>
+                        <field name="lead_source" 
+                               widget="selection" 
+                               readonly="1"
+                               class="o_form_field_highlight"/>
+                        <!-- Fallback for manual source entry -->
+                        <field name="source_id" 
+                               widget="many2one"
+                               options="{'no_create': True}"
+                               attrs="{'invisible': [('lead_source','!=','other')]}"
+                               string="Custom Source"
+                               class="mt-2"/>
+                    </div>
+                </div>
+            </xpath>
+            
+            <!-- 3. ENHANCE REVENUE VISIBILITY -->
+            <xpath expr="//field[@name='expected_revenue']" position="attributes">
+                <attribute name="class">o_highlight_field</attribute>
+            </xpath>
+            
+            <!-- 4. MAKE SURE ORIGINAL SOURCE_ID IS INVISIBLE -->
+            <xpath expr="//field[@name='source_id'][not(@attrs)]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================== -->
+    <!-- FORCE THESE CHANGES TO STICK (PREVENT REVERTING) -->
+    <!-- ============================================== -->
+    <function model="ir.ui.view" name="_force_views_override">
+        <value eval="[ref('crm_lead_view_form_custom')]"/>
+    </function>
+
+    <!-- ============================================== -->
+    <!-- KANBAN VIEW - SHOW SOURCE -->
+    <!-- ============================================== -->
+    <record id="view_crm_lead_kanban_source" model="ir.ui.view">
+        <field name="name">crm.lead.kanban.source</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[contains(@class, 'oe_kanban_details')]" position="inside">
+                <div class="oe_kanban_text_muted">
+                    <strong>Source: </strong>
+                    <field name="lead_source" 
+                           widget="selection_badge"
+                           options="{'classes': {
+                               'facebook': 'bg-primary',
+                               'instagram': 'bg-gradient-purple',
+                               'website': 'bg-info',
+                               'event': 'bg-warning',
+                               'other': 'bg-secondary'
+                           }}"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================== -->
+    <!-- TREE VIEW - ADD SOURCE COLUMN -->
+    <!-- ============================================== -->
+    <record id="view_crm_lead_tree_source" model="ir.ui.view">
+        <field name="name">crm.lead.tree.source</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="lead_source" string="Source" widget="badge"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================== -->
+    <!-- SEARCH VIEW - ADD SOURCE FILTERS -->
+    <!-- ============================================== -->
+    <record id="view_crm_lead_search_custom" model="ir.ui.view">
+        <field name="name">crm.lead.search.custom</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_leads_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_activities']" position="after">
+                <filter string="By Source" name="lead_source_filter" context="{'group_by':'lead_source'}"/>
+                <separator/>
+                <filter string="Facebook" domain="[('lead_source','=','facebook')]"/>
+                <filter string="Instagram" domain="[('lead_source','=','instagram')]"/>
+                <filter string="Website" domain="[('lead_source','=','website')]"/>
+                <filter string="Event" domain="[('lead_source','=','event')]"/>
+                <filter string="Other" domain="[('lead_source','=','other')]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

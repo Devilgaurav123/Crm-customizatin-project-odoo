@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="crm_lead_source_filter_view" model="ir.ui.view">
+        <field name="name">crm.lead.source.filter.view</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_leads_filter"/>
+        <field name="arch" type="xml">
+            <filter name="filter_my_leads" position="after">
+                <filter string="Lead Source" name="custom_lead_source" domain="[]">
+                    <filter string="Facebook" domain="[('custom_lead_source','=','facebook')]"/>
+                    <filter string="Instagram" domain="[('custom_lead_source','=','instagram')]"/>
+                    <filter string="Website" domain="[('custom_lead_source','=','website')]"/>
+                    <filter string="Event" domain="[('custom_lead_source','=','event')]"/>
+                    <filter string="Other" domain="[('custom_lead_source','=','other')]"/>
+                </filter>
+            </filter>
+        </field>
+    </record>
+</odoo>

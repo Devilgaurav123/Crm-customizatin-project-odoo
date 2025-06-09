@@ -1,0 +1,32 @@
+<odoo>
+  <record id="view_lead_generation_wizard" model="ir.ui.view">
+    <field name="name">lead.generation.wizard.form</field>
+    <field name="model">lead.generation.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Generate Leads">
+        <group>
+          <field name="number_of_leads"/>
+          <field name="country_id"/>
+          <field name="state_id"/>
+          <field name="industry_id"/>
+          <field name="size_filter"/>
+          <field name="source"/>
+          <field name="sales_team_id"/>
+          <field name="user_id"/>
+          <field name="tag_ids"/>
+        </group>
+        <footer>
+          <button string="Generate Leads" type="object" name="action_generate_leads" class="btn-primary"/>
+          <button string="Cancel" class="btn-secondary" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_lead_generation_wizard" model="ir.actions.act_window">
+    <field name="name">Generate Leads</field>
+    <field name="res_model">lead.generation.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+</odoo>
